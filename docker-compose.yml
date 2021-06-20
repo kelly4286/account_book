@@ -1,0 +1,28 @@
+version: '3.6'
+
+services:
+  php:
+    image: kelly4286/php:8.0-act_bk
+    container_name: php-ab
+    ports:
+      - '9000:9000'
+    volumes:
+      - .:/account_book/dev:cached
+      - ./docker/php/php.ini:/usr/local/etc/php/php.ini
+      - ./docker/php/xdebug.ini:/usr/local/etc/php/xdebug.ini
+      - ./storage/logs:/var/log/apps
+    restart: always
+
+  nginx:
+    image: nginx:latest
+    container_name: nginx-ab
+    ports:
+      - '80:80'
+      - '443:443'
+    volumes:
+      - .:/account_book/dev:cached
+      - ./docker/ssl/dev.account_book:/etc/nginx/ssl/dev.account_book
+      - ./docker/nginx/conf.d/dev.conf:/etc/nginx/conf.d/dev.conf
+    depends_on:
+      - php
+    restart: always
